@@ -16,6 +16,10 @@ const sendErrorProd = (err, res) => {
         });
         //Programming or other unknown error: dont leak error details
     } else {
+        // 1) Log error
+        console.error('ERROR', err);
+
+        // 2) Send generate mesage
         res.status(500).json({
             status: 'error',
             message: 'Something went very wrong',
