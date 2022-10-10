@@ -1,0 +1,15 @@
+1. JSON.parse converts json to a JS object or an array of JS objects
+
+2. Always version your api
+
+3. without the next() in our middleware, the app will be stuck in this part of the code i.e. we wont be able to get a response.
+
+4. Middle wares are used in between the request and response cylce i.e they are activated when request are sent.
+
+5. const app = express(); 
+Sets a new instance for express and allows the variable, app to use all the express methods.
+
+6. router.param('id', (req, res, next, val)=>{
+    next();
+  })
+  this is for creating a params middle ware which is activated when there is a certain parameter in our route, in this case, ID....val is for the val of the parameter passed.
