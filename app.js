@@ -12,6 +12,8 @@ console.log(process.env.NODE_ENV);
 //Middlewares (Used for all routes)
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
+} else {
+    app.use(morgan('dev'));
 }
 app.use(express.json());
 //middleware to load static files in our browser
