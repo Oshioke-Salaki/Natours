@@ -23,6 +23,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide a password'],
         minlength: 8,
+        //this helps us not to display the password to the client when a GET request route is hit
+        select: false,
     },
     passwordConfirm: {
         type: String,
