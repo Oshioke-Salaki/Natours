@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 //jsonwebtoken is a npm package that allows us to perform authorization tasks
 const jwt = require('jsonwebtoken');
 const User = require('./../models/userModel');
@@ -36,7 +37,7 @@ exports.signup = catchAsync(async(req, res, next) => {
 exports.login = catchAsync(async(req, res, next) => {
     const { email, password } = req.body;
     ///////////////////////////////////////////////
-    //1. Check if email and pasword actually exist
+    //1. Check if email and pasword were provided in the body
     //////////////////////////////////////////////
     if (!email || !password) {
         return next(new AppError('Please provide email and password', 400));
@@ -65,4 +66,33 @@ exports.login = catchAsync(async(req, res, next) => {
         status: 'success',
         token,
     });
+});
+
+exports.protect = catchAsync(async(req, res, next) => {
+    //1. Getting the token and check if it exists
+    //we declared token outside because we want it to be accessed globally
+    let token;
+    if (
+        req.headers.authorization &&
+        req.headers.authorization.startsWith('Bearer')
+    ) {
+        token = req.headers.authorization.split(' ')[1];
+    }
+
+    // console.log(token);
+
+    if (!token) {
+        return next(
+            new AppError('You are not logged in! Please log in to get access', 401)
+        );
+    }
+    //2. verification token
+    //.verify reads the payload(the id) also needs the secret and a callback
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    console.log(decoded);
+    //3. check if user still exists
+
+    //4. Check if user changed passwords after token was issued
+
+    next();
 });
