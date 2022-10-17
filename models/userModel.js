@@ -1,3 +1,5 @@
+//built in node module
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 //bcrypt is used for hashing passwords on save
@@ -45,6 +47,8 @@ const userSchema = new mongoose.Schema({
         },
     },
     passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
 });
 
 userSchema.pre('save', async function(next) {
@@ -82,6 +86,22 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
 
     //False means not changed
     return false;
+};
+
+userSchema.methods.createPasswordResetToken = function() {
+    //this is token we will generate to send to the user so that he can use it to create a new password
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    //we need to hash the reset token
+    this.passwordResetToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+
+    console.log({ resetToken }, this.passwordResetToken);
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
 };
 
 const User = mongoose.model('User', userSchema);
