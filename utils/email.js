@@ -2,12 +2,12 @@ const nodemailer = require('nodemailer');
 
 const sendEmail = async(options) => {
     //1. Create a transporter
-    const transpoter = nodemailer.createTransport({
+    let transporter = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
-        port: proccess.env.EMAIL_PORT,
+        port: process.env.EMAIL_PORT,
         auth: {
             user: process.env.EMAIL_USERNAME,
-            password: process.env.EMAIL_PASSWORD,
+            pass: process.env.EMAIL_PASSWORD,
         },
         //Activate in gmail "less secure app" option
     });
