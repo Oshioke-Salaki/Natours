@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const { promisify } = require('util');
 //jsonwebtoken is a npm package that allows us to perform authorization tasks
 const jwt = require('jsonwebtoken');
@@ -167,4 +168,17 @@ exports.forgotPassword = catchAsync(async(req, res, next) => {
     }
 });
 
-exports.resetPassword = (req, res, next) => {};
+exports.resetPassword = catchAsync(async(req, res, next) => {
+    //1. Get user based on the token
+    const hashedToken = crypto
+        .createHash('sha256')
+        .update(req.params.token)
+        .digest('hex');
+
+    const user = await User.findOne({ passwordResetToken: hashedToken });
+    //2. If token has not expired and there is a user, set the new passsword
+
+    //3. Update the changed passwordAt property for the user
+
+    //4. log the user in send jwt
+});
