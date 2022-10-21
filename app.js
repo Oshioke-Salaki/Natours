@@ -2,6 +2,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./Controllers/errorController');
 const tourRouter = require('./Routes/tourRoutes');
@@ -11,12 +12,17 @@ const app = express();
 console.log(process.env.NODE_ENV);
 
 //Global Middlewares (Used for all routes)
+//SET SECURITY HTTP HEADERS
+app.use(helmet());
+
+//DEVELOPMENT LOGGING
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 } else {
     app.use(morgan('dev'));
 }
 
+//Used to limit the amount of request made by a specific IP address
 const limiter = rateLimit({
     max: 100,
     windowMs: 60 * 60 * 1000,
@@ -26,7 +32,17 @@ const limiter = rateLimit({
 //this applies to all our routes that start with '/api'
 app.use('/api', limiter);
 
-app.use(express.json());
+//BODY PARSER, READING FROM BODY into req.body
+app.use(
+    express.json({
+        limit: '10kb',
+    })
+);
+
+//DATA SANITIZATION against NoSql query injection
+
+//DATA SANITIZATION AGAINST Cross Site Scripting(XSS)
+
 //middleware to load static files in our browser
 app.use(express.static(`${__dirname}/public`));
 
@@ -36,6 +52,7 @@ app.use(express.static(`${__dirname}/public`));
 //     next();
 // });
 
+//Test middleware
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
     // console.log(req.headers);
