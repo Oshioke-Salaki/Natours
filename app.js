@@ -3,6 +3,9 @@ const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./Controllers/errorController');
 const tourRouter = require('./Routes/tourRoutes');
@@ -40,9 +43,9 @@ app.use(
 );
 
 //DATA SANITIZATION against NoSql query injection
-
+app.use(mongoSanitize());
 //DATA SANITIZATION AGAINST Cross Site Scripting(XSS)
-
+app.use(xss());
 //middleware to load static files in our browser
 app.use(express.static(`${__dirname}/public`));
 
