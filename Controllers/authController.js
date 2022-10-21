@@ -18,6 +18,21 @@ const createSendToken = (user, statusCode, res) => {
     //Create the payload
     const token = signToken(user._id);
 
+    const cookieOptions = {
+        expires: new Date(
+            Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+        ),
+        //this ensures that the cookie wont be accessed or modified in any way by the browser
+        httpOnly: true,
+    };
+
+    if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+    //A cookie is a small piece of text that a server can send to clients. the client stores it then automatically sends it back.
+    res.cookie('jwt', token, cookieOptions);
+
+    //Removes password from the output
+    user.password = undefined;
+
     res.status(statusCode).json({
         status: 'success',
         token,
